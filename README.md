@@ -16,7 +16,7 @@
 > 動作に必要な条件を書いてください。
 
 ```bash
-python 3.12 or higher
+python 3.13 or higher
 
 # python lib
 Flask==3.0.3
