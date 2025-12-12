@@ -22,17 +22,3 @@ def add():
     
     return render_template('user_add.html')
 
-
-@user_bp.route('/edit/<int:user_id>', methods=['GET', 'POST'])
-def edit(user_id):
-    user = User.get_or_none(User.user_id == user_id)
-    if not user:
-        return redirect(url_for('user.list'))
-
-    if request.method == 'POST':
-        user.user_name = request.form['user_name']
-        user.user_password = request.form['user_password']
-        user.save()
-        return redirect(url_for('user.list'))
-
-    return render_template('user_edit.html', user=user)

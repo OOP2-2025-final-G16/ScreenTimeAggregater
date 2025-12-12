@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='base-style.css') }}">
+</head>
+<body>
+    <h1>{{ title }}</h1>
+    <ul class="breadcrumb">
+        <li><a href="{{ url_for('index') }}">HOME</a></li>
+        <li><a href="{{ url_for('aggregation') }}">集計</a></li>
+    </ul>
+    <table>
+        <thead>
+            <tr>
+                <th>ユーザー</th>
+                <th>アプリID</th>
+                <th>種別</th>
+                <th>名前</th>
+                <th>利用時間</th>
+                <th>利用日</th>
+                <th>トップフラグ</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for app in items %}
+            <tr>
+                <td>{{ app.user.user_name if app.user else '-' }}</td>
+                <td>{{ app.app_id }}</td>
+                <td>{{ app.app_type }}</td>
+                <td>{{ app.app_name }}</td>
+                <td>{{ app.app_time }}</td>
+                <td>{{ app.app_day }}</td>
+                <td>{{ 'Yes' if app.app_top else 'No' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
