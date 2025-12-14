@@ -11,7 +11,6 @@
         <div class="dashboard-actions">
             <a class="button" href="{{ url_for('personal.personal_stats') }}">個人集計</a>
             <a class="button" href="{{ url_for('personal.global_stats') }}">全体集計</a>
-            <a class="button" href="{{ url_for('logout') }}">ログアウト</a>
         </div>
     </header>
     {% with messages = get_flashed_messages(with_categories=true) %}
