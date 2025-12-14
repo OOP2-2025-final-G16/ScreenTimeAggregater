@@ -8,6 +8,7 @@ from .app import (
     app_type_bp,
     app_user_bp,
 )
+from .parsonal import personal_bp
 
 # Blueprintをリストとしてまとめる
 blueprints = [
@@ -19,4 +20,5 @@ blueprints = [
     app_day_bp,
     app_top_bp,
     app_user_bp,
+    personal_bp,
 ]
