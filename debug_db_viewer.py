@@ -1,20 +1,29 @@
 import sqlite3
 from flask import Flask, render_template
 
+# Flaskアプリケーションのインスタンス化
 app = Flask(__name__)
 
-# データベースファイル名 (カレントディレクトリにあることを前提)
-DB_FILE = 'my_two_tables.db'
+# データベースファイル名
+# 新しいファイル名 (my_app_data.db) を使用
+DB_FILE = 'my_app_data.db'
 
 def get_db_data(table_name):
-    """指定されたテーブル名から全てのデータを取得する関数"""
+    """
+    指定されたテーブル名から全てのデータを取得する関数。
+    データは辞書のリストとして返されます。
+    """
     conn = None
     try:
+        # データベースに接続
         conn = sqlite3.connect(DB_FILE)
-        conn.row_factory = sqlite3.Row  # カラム名でアクセスできるように設定
+        # 取得したデータをカラム名でアクセスできるように設定
+        conn.row_factory = sqlite3.Row  
         cursor = conn.cursor()
 
         # SQLクエリを実行
+        # テーブル名が外部からの入力であるため、f-stringを使っていますが、
+        # 通常はSQLインジェクション防止のため、テーブル名もホワイトリストでチェックすべきです。
         cursor.execute(f"SELECT * FROM {table_name}")
         rows = cursor.fetchall()
 
@@ -28,22 +37,25 @@ def get_db_data(table_name):
             return {"columns": [], "rows": [], "error": "データがありません。"}
 
     except sqlite3.Error as e:
+        # データベース接続またはクエリ実行エラーが発生した場合
         return {"columns": [], "rows": [], "error": f"データベースエラー ({table_name}): {e}"}
     
     finally:
+        # 接続を閉じる
         if conn:
             conn.close()
 
 @app.route('/')
 def index():
-    """メインページにアクセスされたときの処理"""
+    """メインページ (http://127.0.0.1:5000/) にアクセスされたときの処理"""
     
-    # データを取得するテーブル名
-    tables_to_display = ['users', 'data_records']
+    # 【重要】データを取得する新しいテーブル名を設定
+    tables_to_display = ['login_table', 'screen_time_data_table']
     
     # 各テーブルのデータを取得
     all_table_data = {}
     for table_name in tables_to_display:
+        # 取得したデータを辞書に格納 (キーはテーブル名)
         all_table_data[table_name] = get_db_data(table_name)
     
     # テンプレートにデータを渡してレンダリング
@@ -51,4 +63,5 @@ def index():
 
 if __name__ == '__main__':
     # 開発サーバーを起動
+    # debug=True に設定すると、コード変更時に自動で再起動します
     app.run(debug=True)
