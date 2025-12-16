@@ -144,4 +144,5 @@
     }
 
     loadStats();
+    window.addEventListener('personal-stats-refresh', loadStats);
 })();
