@@ -1,0 +1,137 @@
+/* --- 共通リセットと基本スタイル --- */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f7f9;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* --- 1. ヘッダー (Header) スタイル --- */
+.app-header {
+    background-color: #ffffff;
+    color: #333;
+    height: 60px;
+    padding: 0 20px; /* 左右に20pxのパディングを設定 */
+    display: flex;
+    justify-content: space-between; /* タイトルとユーザー情報を両端に配置 */
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: fixed; /* 画面上部に固定 */
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000; /* 最前面に表示 */
+    box-sizing: border-box; /* paddingとborderをwidth/heightに含める */
+}
+
+/* --- ヘッダー要素内の見切れ防止 (Flexbox設定) --- */
+.header-title {
+    flex-grow: 1; /* 空きスペースを最大限利用 */
+    flex-shrink: 1; /* 縮小を許可 */
+    margin-right: 20px; 
+    min-width: 0; /* Flexboxの押し出しを防ぐ */
+    overflow: hidden; 
+}
+
+.header-title h1 {
+    font-size: 20px;
+    margin: 0;
+    font-weight: 500;
+    color: #007bff;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap; 
+}
+
+.header-user {
+    flex-shrink: 0; /* ユーザー情報は絶対に縮小しない */
+    font-size: 14px;
+    color: #666;
+    margin-left: 10px; /* タイトルとの間にマージン */
+    
+    /* ユーザー情報が見切れないようにする設定 */
+    white-space: nowrap; 
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.header-user span {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+/* --- 2. メインコンテナとレイアウト --- */
+.main-container {
+    display: flex;
+    /* ヘッダーの高さ(60px)分を上部に空ける */
+    padding-top: 60px; 
+}
+
+/* --- 3. サイドバー (Sidebar) スタイル --- */
+.sidebar {
+    width: 250px;
+    min-width: 250px;
+    background-color: #2c3e50; /* ダーク系の背景色 */
+    color: #ecf0f1;
+    /* 画面の高さからヘッダー分を引く */
+    height: calc(100vh - 60px); 
+    position: fixed; /* 画面左側に固定 */
+    top: 60px; /* ヘッダーの直下に配置 */
+    left: 0;
+    overflow-y: auto; 
+    z-index: 900; 
+}
+
+.logo-area {
+    padding: 20px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 10px;
+}
+
+
+.nav-link {
+    display: block;
+    padding: 12px 20px;
+    color: #ecf0f1;
+    transition: background-color 0.3s;
+}
+
+.nav-link:hover {
+    background-color: #34495e;
+}
+
+.nav-link.active {
+    background-color: #007bff; 
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.nav_link.main {
+    font-size: 2rem;
+}
+
+
+.nav_link.logout {
+    justify-content: left;
+}
+
+/* --- 4. コンテンツエリア (Content) スタイル --- */
+.content-area {
+    /* サイドバーの幅(250px)分、左にマージンを設定 */
+    margin-left: 250px; 
+    flex-grow: 1; /* 残りのスペースを全て使用 */
+    padding: 20px;
+}
