@@ -1,11 +1,12 @@
 import sqlite3
 
 # データベースファイル名
-DB_FILE = 'my_two_tables.db'
+DB_FILE = 'my_app_data.db' 
 
 def insert_sample_data():
     """
-    既存のテーブルにサンプルデータを挿入します。
+    新しいテーブル定義に合うようにサンプルデータを挿入します。
+    両テーブルの user_id の値を一致させます。
     """
     conn = None
     try:
@@ -14,36 +15,45 @@ def insert_sample_data():
         cursor = conn.cursor()
 
         # ----------------------------------------------------
-        # 1. users テーブルへのデータ挿入
+        # 1. login_table へのデータ挿入 (データは前回のものを維持)
         # ----------------------------------------------------
-        print("テーブル 'users' にデータを挿入します...")
+        print("テーブル 'login_table' にデータを挿入します...")
         
-        users_data = [
-            ('alice_s', 'password123'),
-            ('bob_t', 'securepwd'),
-            ('charlie_u', 'mysecret')
+        login_data = [
+            # (user_name, user_id, user_password)
+            ('alice_smith', 101, 'secure_pass_A'),
+            ('bob_tanaka', 102, 'bob_secret_B'),
+            ('charlie_dev', 103, 'dev_pwd_C')
         ]
         
-        # INSERT ステートメント
-        cursor.executemany("INSERT INTO users (name, password) VALUES (?, ?)", users_data)
-        print(f"-> {cursor.rowcount} 件のユーザーデータを挿入しました。")
+        cursor.executemany("INSERT INTO login_table (user_name, user_id, user_password) VALUES (?, ?, ?)", login_data)
+        print(f"-> {cursor.rowcount} 件のログインデータを挿入しました。")
 
 
         # ----------------------------------------------------
-        # 2. data_records テーブルへのデータ挿入
+        # 2. screen_time_data_table へのデータ挿入 (user_idに変更)
         # ----------------------------------------------------
-        print("テーブル 'data_records' にデータを挿入します...")
+        print("テーブル 'screen_time_data_table' にデータを挿入します...")
         
-        records_data = [
-            (101, 'First record data'),
-            (205, 'Important number'),
-            (310, 'Another string value'),
-            (50, None)  # strカラムはNULLも許可
+        # user_id が PRIMARY KEY となり、login_table の user_id と同じ値を持つ
+        screen_data = [
+            # (user_id, app_type, app_name, app_time, app_day, app_top)
+            # user_id 101, 102, 103 は login_table のユーザーに対応
+            (101, 10, 'Youtube', 3600.5, 20251212, 5),
+            (102, 20, 'Twitter', 1200.0, 20251212, 12),
+            (103, 10, 'Game_A', 720.25, 20251211, 3),
+            (104, 20, 'Twitter_2', 500.0, 20251211, 8),
+            (105, 30, 'Browser', 180.0, 20251212, 4)
         ]
 
-        # INSERT ステートメント
-        cursor.executemany("INSERT INTO data_records (number, str) VALUES (?, ?)", records_data)
-        print(f"-> {cursor.rowcount} 件のレコードデータを挿入しました。")
+        # INSERT ステートメント: app_id が user_id に変更されました
+        sql_insert_screen = """
+        INSERT INTO screen_time_data_table 
+            (user_id, app_type, app_name, app_time, app_day, app_top) 
+        VALUES (?, ?, ?, ?, ?, ?)
+        """
+        cursor.executemany(sql_insert_screen, screen_data)
+        print(f"-> {cursor.rowcount} 件のスクリーンタイムデータを挿入しました。")
 
 
         # 変更をデータベースにコミット（保存）
@@ -68,20 +78,20 @@ def verify_data():
     conn = None
     try:
         conn = sqlite3.connect(DB_FILE)
-        conn.row_factory = sqlite3.Row  # ヘッダー名でアクセス可能にする
+        conn.row_factory = sqlite3.Row
         
         print("\n--- データ確認 ---")
         
-        # usersテーブルのデータ確認
-        print("\n[users テーブル]")
+        # login_tableのデータ確認
+        print("\n[login_table]")
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM users")
+        cursor.execute("SELECT user_id, user_name FROM login_table")
         for row in cursor.fetchall():
             print(dict(row))
             
-        # data_recordsテーブルのデータ確認
-        print("\n[data_records テーブル]")
-        cursor.execute("SELECT * FROM data_records")
+        # screen_time_data_tableのデータ確認
+        print("\n[screen_time_data_table] (user_idがPRIMARY KEY)")
+        cursor.execute("SELECT user_id, app_name FROM screen_time_data_table")
         for row in cursor.fetchall():
             print(dict(row))
             

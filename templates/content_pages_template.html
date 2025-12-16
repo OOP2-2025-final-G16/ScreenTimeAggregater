@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }} - My App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="../static/style.css">
+
+</head>
+<body>
+
+    <header class="app-header">
+        <div class="header-title">
+            <h1 class="app-name">スクリーンタイム集計アプリ</h1>
+        </div>
+        <div class="header-user">
+            <span>{{user_name}}</span>
+        </div>
+    </header>
+
+    <div class="main-container">
+        
+        <aside class="sidebar">
+            <div class="logo-area">
+                <h2>App Logo</h2>
+            </div>
+            <nav class="nav-menu">
+                <ul>
+                    <li><h2><a href="/main_page" class="nav-link main">🏠 メインページ</a></h2></li>
+                    <li><a href="/" class="nav-link active">📝あなたのデータを入力しよう</a></li>
+                    <li><a href="/" class="nav-link">📊個人集計</a></li>
+                    <li><a href="/" class="nav-link logout">👤 ログアウト</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="content-area">
+            {% block content %}
+                <p>ページ固有のコンテンツがここに表示されます。</p>
+            {% endblock %}
+        </main>
+        
+    </div>
+
+</body>
+</html>
