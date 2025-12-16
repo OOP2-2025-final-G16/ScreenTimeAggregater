@@ -16,17 +16,15 @@
     <table>
         <thead>
             <tr>
-                <th>&nbsp;</th>
-                <th>名前</th>
-                <th>年齢</th>
+                <th>ユーザー名</th>
+                <th>パスワード</th>
             </tr>
         </thead>
         <tbody>
             {% for user in items %}
             <tr>
-                <td><a href="{{ url_for('user.edit', user_id=user.id) }}">編集</a></td>
-                <td>{{ user.name }}</td>
-                <td>{{ user.age }}</td>
+                <td>{{ user.user_name }}</td>
+                <td>{{ '•' * (user.user_password|length) }}</td>
             </tr>
             {% endfor %}
         </tbody>
