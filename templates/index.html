@@ -1,16 +1,32 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <title>注文管理システム</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='base-style.css') }}">
+  <meta charset="UTF-8">
+  <title>ログイン | ScreenTimeAggregater</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='base-style.css') }}">
 </head>
 <body>
-    <h1>注文管理システム</h1>
-    <ul>
-      <li><a href="{{ url_for('user.list') }}">ユーザー（顧客）</a></li>
-      <li><a href="{{ url_for('product.list') }}">製品</a></li>
-      <li><a href="{{ url_for('order.list') }}">注文</a></li>
-    </ul>
+  <main class="login-card">
+    <h1>ScreenTimeAggregater</h1>
+    <p>ご自身のアプリ使用履歴をログインして確認・登録してください。</p>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-wrapper">
+        {% for category, message in messages %}
+          <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+    <form method="post" class="login-form">
+      <label for="user_name">ユーザー名</label>
+      <input name="user_name" id="user_name" placeholder="例: yamada" required>
+      <label for="user_password">パスワード</label>
+      <input name="user_password" id="user_password" type="password" placeholder="******" required>
+      <button type="submit">ログイン</button>
+    </form>
+    <p class="muted">まだユーザー登録がお済みでない方</p>
+    <a class="button" href="{{ url_for('user.add') }}">新規ユーザーの登録</a>
+  </main>
 </body>
 </html>
