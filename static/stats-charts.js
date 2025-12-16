@@ -1,156 +1,147 @@
 (() => {
-    const configEl = document.getElementById('stats-config');
-    if (!configEl) {
+    const configNode = document.getElementById('stats-config');
+    if (!configNode) {
         return;
     }
-
-    const endpoint = configEl.dataset.endpoint;
+    const endpoint = configNode.dataset.endpoint;
     if (!endpoint) {
         return;
     }
 
-    const topAppInfo = document.getElementById('topAppInfo');
-    const ratioLabel = document.getElementById('ratioTotalLabel');
-    const typeLabel = document.getElementById('typeTotalLabel');
-    const weeklyCanvas = document.getElementById('weeklyChart');
-    const ratioCanvas = document.getElementById('ratioChart');
-    const typeCanvas = document.getElementById('typeChart');
+    const topAppNode = document.getElementById('topAppInfo');
+    const weeklyCtx = document.getElementById('weeklyChart')?.getContext('2d');
+    const ratioCtx = document.getElementById('ratioChart')?.getContext('2d');
+    const typeCtx = document.getElementById('typeChart')?.getContext('2d');
+    const ratioTotalLabel = document.getElementById('ratioTotalLabel');
+    const typeTotalLabel = document.getElementById('typeTotalLabel');
 
     let weeklyChart;
     let ratioChart;
     let typeChart;
 
-    function renderCharts(payload) {
-        if (!payload) {
+    const ratioColors = ['#1976d2', '#ffca28', '#66bb6a', '#ef5350', '#ab47bc', '#29b6f6'];
+    const typeColors = ['#42a5f5', '#ffb300', '#9ccc65', '#f06292', '#29b6f6', '#7e57c2'];
+
+    function renderWeeklyChart(labels, values) {
+        if (!weeklyCtx) {
             return;
         }
-
-        if (topAppInfo) {
-            if (payload.top_app) {
-                const owner = payload.top_app.user_name ? `（${payload.top_app.user_name}さん）` : '';
-                topAppInfo.textContent = `トップアプリ: ${payload.top_app.app_name} ${owner} / ${payload.top_app.app_time} 分 / ${payload.top_app.app_day}`;
-            } else {
-                topAppInfo.textContent = '対象データがありません。';
-            }
+        if (weeklyChart) {
+            weeklyChart.destroy();
         }
-
-        const weekly = payload.weekly || { labels: [], data: [] };
-        const ratio = payload.ratio || { labels: [], data: [], total: 0 };
-        const typeData = payload.type || { labels: [], data: [], total: 0 };
-
-        const createChart = (canvas, cfg) => {
-            if (!canvas) {
-                return null;
-            }
-            const context = canvas.getContext('2d');
-            if (!context) {
-                return null;
-            }
-            return new Chart(context, cfg);
-        };
-
-        if (weeklyCanvas) {
-            weeklyChart?.destroy();
-            weeklyChart = createChart(weeklyCanvas, {
-                type: 'line',
-                data: {
-                    labels: weekly.labels,
-                    datasets: [
-                        {
-                            label: '1日あたりの合計利用分',
-                            data: weekly.data,
-                            borderColor: '#3b82f6',
-                            backgroundColor: 'rgba(59,130,246,.2)',
-                            tension: 0.25,
-                            fill: true,
-                        },
-                    ],
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: { display: false },
+        weeklyChart = new Chart(weeklyCtx, {
+            type: 'line',
+            data: {
+                labels,
+                datasets: [
+                    {
+                        label: '合計分数',
+                        data: values,
+                        borderColor: '#1976d2',
+                        backgroundColor: 'rgba(25, 118, 210, 0.25)',
+                        fill: true,
+                        tension: 0.3,
                     },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            title: { display: true, text: '分' },
+                ],
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 30,
                         },
                     },
                 },
-            });
+            },
+        });
+    }
+
+    function renderDoughnutChart(ctx, labels, values, colors) {
+        if (!ctx) {
+            return null;
         }
-
-        if (ratioCanvas) {
-            ratioChart?.destroy();
-            ratioChart = createChart(ratioCanvas, {
-                type: 'doughnut',
-                data: {
-                    labels: ratio.labels,
-                    datasets: [
-                        {
-                            label: 'アプリ別',
-                            data: ratio.data,
-                            backgroundColor: ['#ef4444', '#f97316', '#facc15', '#22c55e', '#0ea5e9', '#8b5cf6'],
-                            borderWidth: 1,
+        return new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels,
+                datasets: [
+                    {
+                        data: values,
+                        backgroundColor: colors,
+                    },
+                ],
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                const label = context.label || '';
+                                const value = context.raw || 0;
+                                const total = context.dataset.data.reduce((acc, cur) => acc + cur, 0);
+                                const percent = total ? ((value / total) * 100).toFixed(1) : '0.0';
+                                return `${label}: ${value}分 (${percent}%)`;
+                            },
                         },
-                    ],
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: { position: 'bottom' },
                     },
                 },
-            });
-            if (ratioLabel) {
-                ratioLabel.textContent = `合計 ${ratio.total ?? 0} 分`;
-            }
+            },
+        });
+    }
+
+    function updateTopApp(topApp) {
+        if (!topApp || !topApp.name) {
+            topAppNode.textContent = '登録されたアプリがまだありません。';
+            return;
         }
+        const name = topApp.name;
+        const time = topApp.time ?? 0;
+        topAppNode.innerHTML = `<strong>一番使われたアプリ:</strong> ${name} (${time} 分)`;
+    }
 
-        if (typeCanvas) {
-            typeChart?.destroy();
-            typeChart = createChart(typeCanvas, {
-                type: 'doughnut',
-                data: {
-                    labels: typeData.labels,
-                    datasets: [
-                        {
-                            label: '種別別',
-                            data: typeData.data,
-                            backgroundColor: ['#0ea5e9', '#14b8a6', '#22c55e', '#eab308', '#f97316', '#f43f5e'],
-                            borderWidth: 1,
-                        },
-                    ],
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: { position: 'bottom' },
-                    },
-                },
-            });
-            if (typeLabel) {
-                typeLabel.textContent = `合計 ${typeData.total ?? 0} 分`;
+    async function loadStats() {
+        try {
+            const response = await fetch(endpoint, { credentials: 'same-origin' });
+            if (!response.ok) {
+                throw new Error('集計データの取得に失敗しました。');
+            }
+            const data = await response.json();
+            updateTopApp(data.top_app);
+            if (ratioTotalLabel) {
+                ratioTotalLabel.textContent = `合計: ${data.ratio_total ?? 0} 分`;
+            }
+            if (typeTotalLabel) {
+                typeTotalLabel.textContent = `合計: ${data.type_total ?? 0} 分`;
+            }
+            renderWeeklyChart(data.weekly_labels || [], data.weekly_values || []);
+            if (ratioChart) {
+                ratioChart.destroy();
+            }
+            ratioChart = renderDoughnutChart(
+                ratioCtx,
+                data.ratio_labels || [],
+                data.ratio_values || [],
+                ratioColors,
+            );
+            if (typeChart) {
+                typeChart.destroy();
+            }
+            typeChart = renderDoughnutChart(
+                typeCtx,
+                data.type_labels || [],
+                data.type_values || [],
+                typeColors,
+            );
+        } catch (error) {
+            console.error(error);
+            if (topAppNode) {
+                topAppNode.textContent = '集計データの取得に失敗しました。';
             }
         }
     }
 
-    fetch(endpoint)
-        .then((response) => {
-            if (!response.ok) {
-                throw new Error('統計データの取得に失敗しました。');
-            }
-            return response.json();
-        })
-        .then((payload) => {
-            renderCharts(payload);
-        })
-        .catch((error) => {
-            if (topAppInfo) {
-                topAppInfo.textContent = error.message;
-            }
-            // eslint-disable-next-line no-console
-            console.error(error);
-        });
+    loadStats();
 })();

@@ -1,88 +1,107 @@
-from collections import Counter, defaultdict
-from datetime import date, datetime, timedelta
+from datetime import datetime, timedelta
+
+from peewee import fn
 
 from models import App
 
 
-def _parse_day(value):
-    if not value:
-        return None
-    try:
-        return datetime.strptime(value, '%Y-%m-%d').date()
-    except ValueError:
-        return None
-
-
-def assign_top_flag(user):
-    if user is None:
-        return
-    apps_by_day = defaultdict(list)
-    for app in App.select().where(App.user == user):
-        apps_by_day[app.app_day].append(app)
-
-    for day_apps in apps_by_day.values():
-        if not day_apps:
-            continue
-        top_app = max(day_apps, key=lambda app: app.app_time or 0)
-        for app in day_apps:
-            app.app_top = app == top_app
-            app.save()
-
-
-def build_stats_payload(apps):
-    apps = list(apps)
-    today = date.today()
-    window = [today - timedelta(days=i) for i in range(6, -1, -1)]
-    daily_totals = {day: 0 for day in window}
-
+def weekly_usage(apps):
+    """日別の利用時間ラベルと値を返す"""
+    today = datetime.now().date()
+    days = [today - timedelta(days=i) for i in range(6, -1, -1)]
+    usage = {day: 0 for day in days}
     for app in apps:
-        day_val = _parse_day(app.app_day)
-        if day_val in daily_totals:
-            daily_totals[day_val] += app.app_time or 0
+        parsed = _parse_day(app.app_day)
+        if parsed in usage:
+            usage[parsed] += app.app_time or 0
+    labels = [day.strftime('%m/%d') for day in days]
+    values = [usage[day] for day in days]
+    return labels, values
 
-    weekly = {
-        'labels': [day.strftime('%m/%d') for day in window],
-        'data': [daily_totals[day] for day in window],
-    }
 
-    ratio_counter = Counter()
-    type_counter = Counter()
-
+def ratio(apps):
+    """アプリ名ごとの利用時間比率を算出"""
+    totals = {}
     for app in apps:
-        time_val = app.app_time or 0
-        ratio_counter[app.app_name or '名称未設定'] += time_val
-        type_counter[app.app_type or '分類なし'] += time_val
+        key = app.app_name or '未設定'
+        totals.setdefault(key, 0)
+        totals[key] += app.app_time or 0
+    if not totals:
+        return ['データなし'], [0], 0
+    values = list(totals.values())
+    return list(totals.keys()), values, sum(values)
 
-    def _build_counter_payload(counter):
-        items = sorted(counter.items(), key=lambda pair: pair[1], reverse=True)
-        labels, values = zip(*items) if items else ([], [])
-        return {
-            'labels': list(labels),
-            'data': list(values),
-            'total': sum(values) if items else 0,
-        }
 
-    ratio = _build_counter_payload(ratio_counter)
-    type_ratio = _build_counter_payload(type_counter)
-
-    return {
-        'weekly': weekly,
-        'ratio': ratio,
-        'type': type_ratio,
-    }
+def type_ratio(apps):
+    """カテゴリごとの利用時間比率を算出"""
+    totals = {}
+    for app in apps:
+        key = app.app_type or '未分類'
+        totals.setdefault(key, 0)
+        totals[key] += app.app_time or 0
+    if not totals:
+        return ['データなし'], [0], 0
+    values = list(totals.values())
+    return list(totals.keys()), values, sum(values)
 
 
 def top_app(user=None):
-    query = App.select().order_by(App.app_time.desc())
-    if user is not None:
+    """指定ユーザーまたは全体で使用時間が最も長いアプリを返す"""
+    query = (
+        App.select(
+            App.app_name.alias('name'),
+            fn.COALESCE(fn.SUM(App.app_time), 0).alias('time'),
+        )
+        .group_by(App.app_name)
+        .order_by(fn.SUM(App.app_time).desc())
+        .limit(1)
+    )
+    if user:
         query = query.where(App.user == user)
-    best = query.first()
-    if not best:
+    result = query.dicts().first()
+    if not result:
         return None
+    return result
+
+
+def assign_top_flag(user):
+    """対象ユーザーのトップアプリフラグを更新"""
+    best = top_app(user)
+    App.update(app_top=False).where(App.user == user).execute()
+    if not best or not best.get('name'):
+        return
+    App.update(app_top=True).where(
+        (App.user == user) & (App.app_name == best['name'])
+    ).execute()
+
+
+def build_stats_payload(apps):
+    """統計チャートで使う JSON ペイロードを生成"""
+    weekly_labels, weekly_values = weekly_usage(apps)
+    ratio_labels, ratio_values, ratio_total = ratio(apps)
+    type_labels, type_values, type_total = type_ratio(apps)
     return {
-        'app_id': best.app_id,
-        'app_name': best.app_name,
-        'app_time': best.app_time,
-        'app_day': best.app_day,
-        'user_name': best.user.user_name if best.user else None,
+        'weekly_labels': weekly_labels,
+        'weekly_values': weekly_values,
+        'ratio_labels': ratio_labels,
+        'ratio_values': ratio_values,
+        'ratio_total': ratio_total,
+        'type_labels': type_labels,
+        'type_values': type_values,
+        'type_total': type_total,
     }
+
+
+def _parse_day(app_day):
+    """多形式の日付文字列を datetime.date に変換"""
+    if not app_day:
+        return None
+    for fmt in ('%Y-%m-%d', '%Y/%m/%d', '%m/%d/%Y'):
+        try:
+            return datetime.strptime(app_day, fmt).date()
+        except ValueError:
+            continue
+    try:
+        return datetime.fromisoformat(app_day).date()
+    except ValueError:
+        return None
