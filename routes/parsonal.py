@@ -30,8 +30,6 @@ def _current_user():
 
 
 
-
-
 @personal_bp.route('/')
 def dashboard():
     """ログインユーザーのダッシュボードを表示する。"""
