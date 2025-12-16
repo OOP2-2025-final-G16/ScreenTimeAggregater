@@ -21,4 +21,3 @@ def add():
         return redirect(url_for('user.list'))
     
     return render_template('user_add.html')
-

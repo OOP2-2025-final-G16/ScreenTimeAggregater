@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>集計ダッシュボード</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='base-style.css') }}">
+</head>
+<body>
+    <h1>集計ダッシュボード</h1>
+    <ul>
+        <li><a href="{{ url_for('app_id.list') }}">アプリID</a></li>
+        <li><a href="{{ url_for('app_type.list') }}">アプリの種類</a></li>
+        <li><a href="{{ url_for('app_name.list') }}">アプリの名前</a></li>
+        <li><a href="{{ url_for('app_time.list') }}">利用時間</a></li>
+        <li><a href="{{ url_for('app_day.list') }}">利用日</a></li>
+        <li><a href="{{ url_for('app_top.list') }}">最も利用されたアプリ</a></li>
+        <li><a href="{{ url_for('app_user.user_index') }}">ユーザー別のアプリ</a></li>
+        <li><a href="{{ url_for('personal.personal_stats') }}">個人集計</a></li>
+        <li><a href="{{ url_for('personal.global_stats') }}">全体集計</a></li>
+    </ul>
+</body>
+</html>
