@@ -9,8 +9,9 @@
     <header>
         <h1>{{ user.user_name }}さんのアプリ管理</h1>
         <div class="dashboard-actions">
-            <a class="button" href="{{ url_for('personal.personal_stats') }}">個人集計</a>
-            <a class="button" href="{{ url_for('personal.global_stats') }}">全体集計</a>
+            <a class="button" href="{{ url_for('stats_personal') }}">個人集計</a>
+            <a class="button" href="{{ url_for('stats_global') }}">全体集計</a>
+            <a class="button secondary" href="{{ url_for('logout') }}">ログアウト</a>
         </div>
     </header>
     {% with messages = get_flashed_messages(with_categories=true) %}
@@ -44,8 +45,7 @@
                     <td>{{ app.app_time }}</td>
                     <td>{{ app.app_day }}</td>
                     <td class="actions">
-                        <a href="{{ url_for('personal.edit_app', app_id=app.app_id) }}">編集</a>
-                        <form method="post" action="{{ url_for('personal.delete_app', app_id=app.app_id) }}" onsubmit="return confirm('削除してもよろしいですか？');">
+                        <form method="post" action="{{ url_for('personal_delete_app', app_id=app.app_id) }}" onsubmit="return confirm('削除してもよろしいですか？');">
                             <button class="link-button danger" type="submit">削除</button>
                         </form>
                     </td>
@@ -60,7 +60,7 @@
     </section>
     <section>
         <h2>アプリの追加</h2>
-        <form class="app-form" method="post" action="{{ url_for('personal.add_app') }}">
+        <form class="app-form" method="post" action="{{ url_for('personal_add_app') }}">
             <label>種別
                 <select name="app_type">
                     <option value="">選択してください</option>
