@@ -1,25 +1,25 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <title>ログイン</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='base-style.css') }}">
+  <meta charset="UTF-8">
+  <title>ログイン | ScreenTimeAggregater</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='base-style.css') }}">
 </head>
-    <body>
-        <h1>ログイン</h1>
-        <from action = "/login" method="POST">
-            <p>
-             <label for="UserID">User ID：</label>
-            <input type="text" id="UserID" name="UserID">
-         </p>
-
-         <p>
-        <label for="password">Password：</label>
-        <input type="password" id="password" name="password">
-      </p>
-
-       <button type="submit">ログイン</button>
+<body>
+  <main class="login-card">
+    <h1>ScreenTimeAggregater</h1>
+    <p>ご自身のアプリ使用履歴をログインして確認・登録してください。</p>
+    <form id="loginForm" class="login-form">
+      <label for="user_name">ユーザー名</label>
+      <input name="user_name" id="user_name" placeholder="例: yamada" required>
+      <label for="user_password">パスワード</label>
+      <input name="user_password" id="user_password" type="password" placeholder="******" required>
+      <button type="submit">ログイン</button>
     </form>
+    <div id="loginFeedback" class="flash-wrapper" aria-live="polite"></div>
+    <p class="muted">まだユーザー登録がお済みでない方</p>
+    <a class="button" href="{{ url_for('users_add') }}">新規ユーザーの登録</a>
   </main>
+  <script src="{{ url_for('static', filename='auth.js') }}"></script>
 </body>
 </html>
