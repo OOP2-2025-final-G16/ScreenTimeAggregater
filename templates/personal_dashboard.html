@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>マイページ | {{ user.user_name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='base-style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>{{ user.user_name }}さんのアプリ管理</h1>
+        <div class="dashboard-actions">
+            <a class="button" href="{{ url_for('stats_personal') }}">個人集計</a>
+            <a class="button" href="{{ url_for('stats_global') }}">全体集計</a>
+            <a class="button secondary" href="{{ url_for('logout') }}">ログアウト</a>
+        </div>
+    </header>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-wrapper">
+            {% for category, message in messages %}
+                <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    <section>
+        <h2>登録中のアプリ</h2>
+        {% if apps %}
+        <div class="table-scroll">
+        <table>
+            <thead>
+                <tr>
+                    <th>種別</th>
+                    <th>名前</th>
+                    <th>利用時間（分）</th>
+                    <th>利用日</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for app in apps %}
+                <tr>
+                    <td>{{ app.app_type }}</td>
+                    <td>{{ app.app_name }}</td>
+                    <td>{{ app.app_time }}</td>
+                    <td>{{ app.app_day }}</td>
+                    <td class="actions">
+                        <form method="post" action="{{ url_for('personal_delete_app', app_id=app.app_id) }}" onsubmit="return confirm('削除してもよろしいですか？');">
+                            <button class="link-button danger" type="submit">削除</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+        {% else %}
+        <p>登録されているアプリがまだありません。下のフォームから追加してください。</p>
+        {% endif %}
+    </section>
+    <section>
+        <h2>アプリの追加</h2>
+        <form class="app-form" method="post" action="{{ url_for('personal_add_app') }}">
+            <label>種別
+                <select name="app_type">
+                    <option value="">選択してください</option>
+                    <option value="ゲーム">ゲーム</option>
+                    <option value="SNS">SNS</option>
+                    <option value="仕事・学習">仕事・学習</option>
+                    <option value="動画・音楽">動画・音楽</option>
+                    <option value="その他">その他</option>
+                </select>
+            </label>
+            <label>名前
+                <input name="app_name" placeholder="Twitterなど">
+            </label>
+            <label>利用時間（分）
+                <input type="number" name="app_time" min="0" value="0">
+            </label>
+            <label>利用日
+                <input type="date" name="app_day">
+            </label>
+            <button type="submit">追加</button>
+        </form>
+    </section>
+</body>
+</html>
