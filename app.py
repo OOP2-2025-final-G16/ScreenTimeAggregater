@@ -53,7 +53,6 @@ def _get_user_apps(user):
 # ------------------------------------------------------------------
 
 @app.route('/', methods=['GET', 'POST'])
-@app.route('/login', methods=['GET', 'POST'])
 def login():
     """ログイン画面。POST時は認証を行いアプリ一覧(personal)へ遷移"""
     if request.method == 'POST':
