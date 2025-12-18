@@ -52,7 +52,13 @@ def _get_user_apps(user):
 # 画面遷移用ルート（HTMLを返す）
 # ------------------------------------------------------------------
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/')
+def index():
+    """起動時は全体集計へリダイレクト"""
+    return redirect(url_for('stats_global'))
+
+
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     """ログイン画面。POST時は認証を行いアプリ一覧(personal)へ遷移"""
     if request.method == 'POST':
@@ -88,7 +94,7 @@ def personal_add_app():
     """HTMLフォームからのアプリ追加（BuildError解消用）"""
     user = _current_user()
     if not user:
-        return redirect(url_for('index'))
+        return redirect(url_for('login'))
 
     app_name = request.form.get('app_name', '').strip() or '名称未設定'
     app_type = request.form.get('app_type', '').strip() or '未分類'
@@ -115,7 +121,7 @@ def personal_delete_app(app_id):
     """HTMLフォームからのアプリ削除（BuildError解消用）"""
     user = _current_user()
     if not user:
-        return redirect(url_for('index'))
+        return redirect(url_for('login'))
     
     app_obj = App.get_or_none(App.app_id == app_id, App.user == user)
     if not app_obj:
@@ -159,7 +165,7 @@ def stats_personal():
     """個人統計画面"""
     user = _current_user()
     if not user:
-        return redirect(url_for('index'))
+        return redirect(url_for('login'))
     return render_template(
         'stats.html',
         title=f'{user.user_name}さんの集計',
