@@ -65,13 +65,13 @@ def login():
             session['user_id'] = user.user_id
             return redirect(url_for('personal'))  # ログイン後はアプリ一覧へ
         flash('ユーザー名またはパスワードが正しくありません。', 'error')
-    return render_template('index.html')
+    return render_template('login.html')
 
 @app.route('/logout')
 def logout():
     session.pop('user_id', None)
     flash('ログアウトしました。', 'info')
-    return redirect(url_for('index'))
+    return redirect(url_for('login'))
 
 @app.route('/personal')
 def personal():
@@ -79,7 +79,7 @@ def personal():
     user = _current_user()
     if not user:
         flash('ログインが必要です。', 'error')
-        return redirect(url_for('index'))
+        return redirect(url_for('login'))
     apps = list(_get_user_apps(user))
     return render_template('personal_dashboard.html', user=user, apps=apps)
 
@@ -150,7 +150,8 @@ def users_add():
             
         User.create(user_name=user_name, user_password=user_password)
         flash('ユーザーを追加しました。', 'info')
-        return redirect(url_for('user_list'))
+        # 追加後も同画面に留まる
+        return render_template('user_add.html')
     return render_template('user_add.html')
 
 @app.route('/stats/personal')

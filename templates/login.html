@@ -27,18 +27,18 @@
             </div>
             <nav class="nav-menu">
                 <ul>
-                    <li><h2><a href="/main_page" class="nav-link main">🏠 メインページ</a></h2></li>
-                    <li><a href="/personal_dashboard.html" class="nav-link active">📝あなたのデータを入力しよう</a></li>
-                    <li><a href="/stats.html" class="nav-link">📊個人集計</a></li>
-                    <li><a href="/user_add.html" class="nav-link">📲新規登録</a></li>
-                    <li><a href="/index.html" class="nav-link logout">👤 ログアウト</a></li>
+                    <li><h2><a href="{{ url_for('login') }}" class="nav-link main">🏠 メインページ</a></h2></li>
+                    <li><a href="{{ url_for('personal') }}" class="nav-link">📝あなたのデータを入力しよう</a></li>
+                    <li><a href="{{ url_for('stats_personal') }}" class="nav-link">📊個人集計</a></li>
+                    <li><a href="{{ url_for('users_add') }}" class="nav-link">📲新規登録</a></li>
+                    <li><a href="{{ url_for('logout') }}" class="nav-link logout">👤 ログアウト</a></li>
                 </ul>
             </nav>
         </aside>
 
         <main class="content-area">
             <h1>ログイン</h1>
-        <from action = "/login" method="POST">
+        <form action="{{ url_for('login') }}" method="POST">
             <p>
              <label for="UserID">User ID：</label>
             <input type="text" id="UserID" name="UserID">
