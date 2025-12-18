@@ -1,12 +1,46 @@
+
+
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>ユーザー追加</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='base-style.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }} - My App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="../static/style.css">
+
 </head>
 <body>
-    <h1>新しいユーザーを追加</h1>
+
+    <header class="app-header">
+        <div class="header-title">
+            <h1 class="app-name">スクリーンタイム集計アプリ</h1>
+        </div>
+        <div class="header-user">
+            <span>{{user_name}}</span>
+        </div>
+    </header>
+
+    <div class="main-container">
+        
+        <aside class="sidebar">
+            <div class="logo-area">
+                <h2>App Logo</h2>
+            </div>
+            <nav class="nav-menu">
+                <ul>
+                    <li><h2><a href="/main_page" class="nav-link main">🏠 メインページ</a></h2></li>
+                    <li><a href="/personal_dashboard.html" class="nav-link active">📝あなたのデータを入力しよう</a></li>
+                    <li><a href="/stats.html" class="nav-link">📊個人集計</a></li>
+                    <li><a href="/user_add.html" class="nav-link">📲新規登録</a></li>
+                    <li><a href="/index.html" class="nav-link logout">👤 ログアウト</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="content-area">
+            <h1>新しいユーザーを追加</h1>
     <ul class="breadcrumb">
         <li><a href="{{ url_for('index') }}">HOME</a></li>
         <li><a href="{{ url_for('user_list') }}">ユーザー一覧</a></li>
@@ -18,5 +52,11 @@
         <label>パスワード: <input type="password" name="user_password" minlength="6" required></label><br>
         <button type="submit">追加</button>
     </form>
+
+
+        </main>
+        
+    </div>
+
 </body>
 </html>
