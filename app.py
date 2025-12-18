@@ -53,7 +53,7 @@ def _get_user_apps(user):
 # ------------------------------------------------------------------
 
 @app.route('/', methods=['GET', 'POST'])
-def index():
+def login():
     """ログイン画面。POST時は認証を行いアプリ一覧(personal)へ遷移"""
     if request.method == 'POST':
         user_name = request.form.get('user_name', '').strip()
