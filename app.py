@@ -52,7 +52,7 @@ def _get_user_apps(user):
 # 画面遷移用ルート（HTMLを返す）
 # ------------------------------------------------------------------
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/login', methods=['GET', 'POST'])
 def index():
     """ログイン画面。POST時は認証を行いアプリ一覧(personal)へ遷移"""
     if request.method == 'POST':
@@ -65,7 +65,7 @@ def index():
             session['user_id'] = user.user_id
             return redirect(url_for('personal'))  # ログイン後はアプリ一覧へ
         flash('ユーザー名またはパスワードが正しくありません。', 'error')
-    return render_template('index.html')
+    return render_template('login.html')
 
 @app.route('/logout')
 def logout():
@@ -160,7 +160,7 @@ def stats_personal():
     if not user:
         return redirect(url_for('index'))
     return render_template(
-        'stats.html',
+        'index.html',
         title=f'{user.user_name}さんの集計',
         user=user,
         stats_endpoint=url_for('api_personal_stats'),
@@ -169,11 +169,11 @@ def stats_personal():
         other_label='全体集計へ',
     )
 
-@app.route('/stats/global')
+@app.route('/')
 def stats_global():
     """全体統計画面"""
     return render_template(
-        'stats.html',
+        'index.html',
         title='全体集計',
         user=None,
         stats_endpoint=url_for('api_global_stats'),

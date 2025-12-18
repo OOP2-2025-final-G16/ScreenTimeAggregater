@@ -2,24 +2,41 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>ログイン</title>
+    <title>ScreenTimeAggregater - ログイン</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='base-style.css') }}">
 </head>
-    <body>
-        <h1>ログイン</h1>
-        <from action = "/login" method="POST">
-            <p>
-             <label for="UserID">User ID：</label>
-            <input type="text" id="UserID" name="UserID">
-         </p>
+<body>
+    <h1>ScreenTimeAggregater</h1>
 
-         <p>
-        <label for="password">Password：</label>
-        <input type="password" id="password" name="password">
-      </p>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash {{ category }}" style="color: red;">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
 
-       <button type="submit">ログイン</button>
-    </form>
-  </main>
+    <div class="login-form">
+        <h2>ログイン</h2>
+        <form action="{{ url_for('index') }}" method="post">
+            <div class="form-group">
+                <label for="user_name">ユーザー名:</label><br>
+                <input type="text" id="user_name" name="user_name" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="user_password">パスワード:</label><br>
+                <input type="password" id="user_password" name="user_password" required>
+            </div>
+            
+            <button type="submit">ログインしてアプリ一覧へ</button>
+        </form>
+    </div>
+
+    <hr>
+    <h3>管理メニュー</h3>
+    <ul>
+      <li><a href="{{ url_for('users_add') }}">アカウント新規登録はこちら</a></li>
+    </ul>
 </body>
 </html>

@@ -2,43 +2,45 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>ScreenTimeAggregater - ログイン</title>
+    <title>{{ title }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='base-style.css') }}">
 </head>
 <body>
-    <h1>ScreenTimeAggregater</h1>
-
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        {% for category, message in messages %}
-          <div class="flash {{ category }}" style="color: red;">{{ message }}</div>
-        {% endfor %}
-      {% endif %}
-    {% endwith %}
-
-    <div class="login-form">
-        <h2>ログイン</h2>
-        <form action="{{ url_for('index') }}" method="post">
-            <div class="form-group">
-                <label for="user_name">ユーザー名:</label><br>
-                <input type="text" id="user_name" name="user_name" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="user_password">パスワード:</label><br>
-                <input type="password" id="user_password" name="user_password" required>
-            </div>
-            
-            <button type="submit">ログインしてアプリ一覧へ</button>
-        </form>
-    </div>
-
-    <hr>
-    <h3>管理メニュー</h3>
-    <ul>
-      <li><a href="{{ url_for('personal') }}">アプリ一覧を表示</a></li>
-      <li><a href="{{ url_for('user_list') }}">ユーザー管理</a></li>
-      <li><a href="{{ url_for('stats_global') }}">全体統計</a></li>
-    </ul>
+    <main class="stats-page">
+        <div class="card">
+            <header class="stats-hero">
+                <div>
+                    <h1>{{ title }}</h1>
+                    {% if user %}
+                        <p>{{ user.user_name }}さんの集計です。</p>
+                    {% endif %}
+                    <p id="topAppInfo">集計データを読み込み中...</p>
+                </div>
+                <div class="stats-actions">
+                    <a class="button" href="{{ url_for('personal.dashboard') }}">マイページへ</a>
+                    <a class="button" href="{{ other_url }}">{{ other_label }}</a>
+                </div>
+            </header>
+        </div>
+        <section class="chart-card card">
+            <h2>一週間での1日あたりの使用時間</h2>
+            <canvas id="weeklyChart"></canvas>
+        </section>
+        <div class="chart-pair">
+            <section class="chart-card card">
+                <h2>アプリ別の使用比率</h2>
+                <p class="chart-total" id="ratioTotalLabel"></p>
+                <canvas id="ratioChart"></canvas>
+            </section>
+            <section class="chart-card card">
+                <h2>種別ごとの使用比率</h2>
+                <p class="chart-total" id="typeTotalLabel"></p>
+                <canvas id="typeChart"></canvas>
+            </section>
+        </div>
+        <div id="stats-config" data-endpoint="{{ stats_endpoint }}" hidden></div>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ url_for('static', filename='stats-charts.js') }}"></script>
 </body>
 </html>
