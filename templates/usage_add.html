@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>アプリケーション使用データ登録</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='base-style.css') }}">
+</head>
+<body>
+    <h1>アプリケーション使用状況の記録</h1>
+    <ul class="breadcrumb">
+        <li><a href="{{ url_for('index') }}">HOME</a></li>
+        <li><a href="{{ url_for('usage.list') }}">使用データ一覧</a></li>
+        <li>新規データ入力</li>
+    </ul>
+
+    <form action="{{ url_for('usage.add') }}" method="post">
+        
+        <label>ユーザーID: 
+            <input type="text" name="user_id" required>
+        </label><br>
+        
+        <label>アプリ名: 
+            <input type="text" name="app_name" required>
+        </label><br>
+
+        <label>アプリの種類: 
+            <select name="app_type" required>
+                <option value="" disabled selected>選択してください</option>
+                <option value="ゲーム">ゲーム</option>
+                <option value="SNS">SNS</option>
+                <option value="仕事効率化">仕事効率化</option>
+                <option value="エンタメ">エンタメ</option>
+                <option value="その他">その他</option>
+            </select>
+        </label><br>
+        
+        <label>使用時間 (分): 
+            <input type="number" step="1" min="1" name="app_time" required>
+        </label><br>
+
+        <label>使用日: 
+            <input type="date" name="app_day" required>
+        </label><br>
+        
+        <button type="submit">記録を追加</button>
+    </form>
+</body>
+</html>
