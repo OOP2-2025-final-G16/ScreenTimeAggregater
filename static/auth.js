@@ -25,8 +25,8 @@ if (loginForm) {
             
             if (result.success) {
                 feedbackDiv.innerHTML = `<div class="flash success">${result.message}</div>`;
-                // ログイン成功後、メインページへリダイレクト(将来の実装用)
-                window.location.href = '/main';
+                // ログイン成功後の処理
+                //
             } else {
                 feedbackDiv.innerHTML = `<div class="flash error">${result.message}</div>`;
             }
