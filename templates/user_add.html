@@ -30,20 +30,29 @@
             </div>
             <nav class="nav-menu">
                 <ul>
-                    <li><h2><a href="/main_page" class="nav-link main">🏠 メインページ</a></h2></li>
-                    <li><a href="/personal_dashboard.html" class="nav-link active">📝あなたのデータを入力しよう</a></li>
-                    <li><a href="/stats.html" class="nav-link">📊個人集計</a></li>
-                    <li><a href="/user_add.html" class="nav-link">📲新規登録</a></li>
-                    <li><a href="/index.html" class="nav-link logout">👤 ログアウト</a></li>
+                    <li><h2><a href="{{ url_for('stats_global') }}" class="nav-link main">🏠 メインページ</a></h2></li>
+                    <li><a href="{{ url_for('personal') }}" class="nav-link">📝データ追加</a></li>
+                    <li><a href="{{ url_for('stats_personal') }}" class="nav-link">📊個人集計</a></li>
+                    <li><a href="{{ url_for('users_add') }}" class="nav-link">📲新規登録</a></li>
+                    <li><a href="{{ url_for('logout') }}" class="nav-link logout">👤 ログアウト</a></li>
                 </ul>
             </nav>
         </aside>
 
         <main class="content-area">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <ul class="flash-messages">
+                        {% for category, message in messages %}
+                            <li class="flash-{{ category }}">{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+
             <h1>新しいユーザーを追加</h1>
     <ul class="breadcrumb">
-        <li><a href="{{ url_for('login') }}">HOME</a></li>
-        <li><a href="{{ url_for('user_list') }}">ユーザー一覧</a></li>
+        </li><button type="submit"><li><a href="{{ url_for('user_list') }}">ユーザー一覧</a></button>
         <li>ユーザー登録</li>
     </ul>
 
@@ -52,8 +61,7 @@
         <label>パスワード: <input type="password" name="user_password" minlength="6" required></label><br>
         <button type="submit">追加</button>
     </form>
-
-
+    
         </main>
         
     </div>

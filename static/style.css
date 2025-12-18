@@ -133,5 +133,108 @@ a {
     /* サイドバーの幅(250px)分、左にマージンを設定 */
     margin-left: 250px; 
     flex-grow: 1; /* 残りのスペースを全て使用 */
+    padding: 16px;
+}
+
+/* statsページ本体もサイドバーぶんオフセットする */
+.stats-page {
+    margin-left: 250px;
+    flex-grow: 1;
+    padding: 24px;
+    box-sizing: border-box;
+    width: calc(100% - 250px);
+}
+
+.stats-hero {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.stats-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.chart-card {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.chart-card canvas {
+    width: 100% !important;
+    aspect-ratio: 16 / 9;
+    max-height: none;
+}
+
+.chart-pair {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 16px;
+    align-items: stretch;
+}
+
+.card {
+    background: #fff;
+    border-radius: 12px;
     padding: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    border: 1px solid #f0f0f0;
+}
+
+.button {
+    background-color: #1976d2;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    display: inline-block;
+}
+
+.button:hover {
+    background-color: #155aab;
+}
+
+@media (max-width: 900px) {
+    .sidebar {
+        position: relative;
+        width: 100%;
+        min-width: 0;
+        height: auto;
+        top: 0;
+    }
+
+    .main-container {
+        flex-direction: column;
+        padding-top: 60px;
+    }
+
+    .stats-page,
+    .content-area {
+        margin-left: 0;
+        width: 100%;
+        padding: 16px;
+    }
+}
+
+/* --- Dashboard-specific text sizing --- */
+.content-area h1,
+.stats-page h1 {
+    font-size: 22px;
+}
+
+.content-area h2,
+.stats-page h2,
+.sidebar h2 {
+    font-size: 18px;
 }

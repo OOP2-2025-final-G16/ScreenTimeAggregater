@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ title }} - My App</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link rel="stylesheet" href="../static/style.css">
+    
 
 </head>
 <body>
@@ -27,8 +27,8 @@
             </div>
             <nav class="nav-menu">
                 <ul>
-                    <li><h2><a href="{{ url_for('login') }}" class="nav-link main">🏠 メインページ</a></h2></li>
-                    <li><a href="{{ url_for('personal') }}" class="nav-link">📝あなたのデータを入力しよう</a></li>
+                    <li><h2><a href="{{ url_for('stats_global') }}" class="nav-link main">🏠 メインページ</a></h2></li>
+                    <li><a href="{{ url_for('personal') }}" class="nav-link">📝データ追加</a></li>
                     <li><a href="{{ url_for('stats_personal') }}" class="nav-link">📊個人集計</a></li>
                     <li><a href="{{ url_for('users_add') }}" class="nav-link">📲新規登録</a></li>
                     <li><a href="{{ url_for('logout') }}" class="nav-link logout">👤 ログアウト</a></li>
@@ -37,21 +37,31 @@
         </aside>
 
         <main class="content-area">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <ul class="flash-messages">
+                        {% for category, message in messages %}
+                            <li class="flash-{{ category }}">{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+
             <h1>ログイン</h1>
-        <form action="{{ url_for('login') }}" method="POST">
-            <p>
-             <label for="UserID">User ID：</label>
-            <input type="text" id="UserID" name="UserID">
-         </p>
+            <form action="{{ url_for('login') }}" method="POST">
+                <p>
+                    <label for="user_name">ユーザー名：</label>
+                    <input type="text" id="user_name" name="user_name" required>
+                </p>
 
-         <p>
-        <label for="password">Password：</label>
-        <input type="password" id="password" name="password">
-      </p>
+                <p>
+                    <label for="user_password">パスワード：</label>
+                    <input type="password" id="user_password" name="user_password" required>
+                </p>
 
-       <button type="submit">ログイン</button>
-    </form>
-  </main>
+                <button type="submit">ログイン</button>
+            </form>
+        </main>
     </div>
 
 </body>
