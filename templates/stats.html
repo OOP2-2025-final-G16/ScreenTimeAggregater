@@ -24,49 +24,56 @@
             </div>
             <nav class="nav-menu">
                 <ul>
-                    <li><h2><a href="/main_page" class="nav-link main">🏠 メインページ</a></h2></li>
-                    <li><a href="/" class="nav-link active">📝あなたのデータを入力しよう</a></li>
-                    <li><a href="/" class="nav-link">📊個人集計</a></li>
-                    <li><a href="/" class="nav-link logout">👤 ログアウト</a></li>
+                    <li><h2><a href="{{ url_for('stats_global') }}" class="nav-link main">🏠 メインページ</a></h2></li>
+                    <li><a href="{{ url_for('personal') }}" class="nav-link">📝データ追加</a></li>
+                    <li><a href="{{ url_for('stats_personal') }}" class="nav-link">📊個人集計</a></li>
+                    <li><a href="{{ url_for('users_add') }}" class="nav-link">📲新規登録</a></li>
+                    <li><a href="{{ url_for('logout') }}" class="nav-link logout">👤 ログアウト</a></li>
                 </ul>
             </nav>
         </aside>
 
-    <main class="stats-page">
-        <div class="card">
-            <header class="stats-hero">
-                <div>
-                    <h1>{{ title }}</h1>
-                    {% if user %}
-                        <p>{{ user.user_name }}さんの集計です。</p>
-                    {% endif %}
-                    <p id="topAppInfo">集計データを読み込み中...</p>
-                </div>
-                <div class="stats-actions">
-                    <a class="button" href="{{ url_for('personal') }}">マイページへ</a>
-                    <a class="button" href="{{ other_url }}">{{ other_label }}</a>
-                </div>
-            </header>
-        </div>
-        <section class="chart-card card">
-            <h2>一週間での1日あたりの使用時間</h2>
-            <canvas id="weeklyChart"></canvas>
-        </section>
-        <div class="chart-pair">
+        <main class="stats-page">
+            <div class="card">
+                <header class="stats-hero">
+                    <div>
+                        <h1>{{ title }}</h1>
+                        {% if user %}
+                            <p>{{ user.user_name }}さんの集計です。</p>
+                        {% endif %}
+                        <p id="topAppInfo">集計データを読み込み中...</p>
+                    </div>
+                </header>
+            </div>
             <section class="chart-card card">
-                <h2>アプリ別の使用比率</h2>
-                <p class="chart-total" id="ratioTotalLabel"></p>
-                <canvas id="ratioChart"></canvas>
+                <h2>一週間での1日あたりの使用時間</h2>
+                <canvas id="weeklyChart"></canvas>
             </section>
-            <section class="chart-card card">
-                <h2>種別ごとの使用比率</h2>
-                <p class="chart-total" id="typeTotalLabel"></p>
-                <canvas id="typeChart"></canvas>
-            </section>
-        </div>
-        <div id="stats-config" data-endpoint="{{ stats_endpoint }}" hidden></div>
-    </main>
+            <div class="chart-pair">
+                <section class="chart-card card">
+                    <h2>アプリ別の使用比率</h2>
+                    <p class="chart-total" id="ratioTotalLabel"></p>
+                    <canvas id="ratioChart"></canvas>
+                </section>
+                <section class="chart-card card">
+                    <h2>種別ごとの使用比率</h2>
+                    <p class="chart-total" id="typeTotalLabel"></p>
+                    <canvas id="typeChart"></canvas>
+                </section>
+            </div>
+            <div id="stats-config" data-endpoint="{{ stats_endpoint }}" hidden></div>
+        </main>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="{{ url_for('static', filename='stats-charts.js') }}"></script>
+    <script
+        data-timeout="0"
+        data-heartbeat-url="{{ url_for('heartbeat') }}"
+        data-heartbeat-interval="120000"
+        data-logout-url="{{ url_for('logout') }}"
+        data-redirect-url="{{ url_for('login') }}"
+        src="{{ url_for('static', filename='auto-logout.js') }}"
+    ></script>
 </body>
 </html>

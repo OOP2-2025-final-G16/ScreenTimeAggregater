@@ -2,33 +2,65 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>データ一覧</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='base-style.css') }}">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>{{ title }}</h1>
-    <ul class="breadcrumb">
-        <li><a href="{{ url_for('login') }}">HOME</a></li>
-        <li><a href="{{ url_for('user_list') }}">ユーザー一覧</a></li>
-    </ul>
 
-    <a href="{{ url_for('users_add') }}">新規ユーザー追加</a>
-    
-    <table>
-        <thead>
-            <tr>
-                <th>ユーザー名</th>
-                <th>パスワード</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for user in items %}
-            <tr>
-                <td>{{ user.user_name }}</td>
-                <td>{{ '•' * (user.user_password|length) }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <header class="app-header">
+        <div class="header-title">
+            <h1 class="app-name">スクリーンタイム集計アプリ</h1>
+        </div>
+        <div class="header-user">
+            <span>{{ user_name }}</span>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <aside class="sidebar">
+            <div class="logo-area">
+                <h2>App Logo</h2>
+            </div>
+            <nav class="nav-menu">
+                <ul>
+                    <li><h2><a href="{{ url_for('stats_global') }}" class="nav-link main">🏠 メインページ</a></h2></li>
+                    <li><a href="{{ url_for('personal') }}" class="nav-link">📝データ追加</a></li>
+                    <li><a href="{{ url_for('stats_personal') }}" class="nav-link">📊個人集計</a></li>
+                    <li><a href="{{ url_for('users_add') }}" class="nav-link">📲新規登録</a></li>
+                    <li><a href="{{ url_for('logout') }}" class="nav-link logout">👤 ログアウト</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="content-area">
+            <div class="card">
+                <h1>{{ title }}</h1>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ユーザー名</th>
+                            <th>パスワード</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in items %}
+                        <tr>
+                            <td>{{ user.user_name }}</td>
+                            <td>{{ '•' * (user.user_password|length) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+    <script
+        data-timeout="0"
+        data-heartbeat-url="{{ url_for('heartbeat') }}"
+        data-heartbeat-interval="120000"
+        data-logout-url="{{ url_for('logout') }}"
+        data-redirect-url="{{ url_for('login') }}"
+        src="{{ url_for('static', filename='auto-logout.js') }}"
+    ></script>
 </body>
 </html>

@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>ページが見つかりません</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main style="padding: 2rem; text-align: center;">
+    <h1>404 Not Found</h1>
+    <p>お探しのページは見つかりませんでした。</p>
+    <p><a href="{{ url_for('login') }}">ログイン画面に戻る</a></p>
+  </main>
+      <script
+        data-timeout="0"
+      data-heartbeat-url="{{ url_for('heartbeat') }}"
+      data-heartbeat-interval="120000"
+      data-logout-url="{{ url_for('logout') }}"
+      data-redirect-url="{{ url_for('login') }}"
+      src="{{ url_for('static', filename='auto-logout.js') }}"
+    ></script>
+</body>
+</html>
