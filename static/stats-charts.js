@@ -4,6 +4,7 @@
 
     const endpoint = configEl.dataset.endpoint;
     if (!endpoint) return;
+    // APIエンドポイントが指定されていれば統計データを取得する。
 
     const topAppEl = document.getElementById('topAppInfo');
     const weeklyCanvas = document.getElementById('weeklyChart');
@@ -11,12 +12,14 @@
     const typeCanvas = document.getElementById('typeChart');
     const ratioTotalLabel = document.getElementById('ratioTotalLabel');
     const typeTotalLabel = document.getElementById('typeTotalLabel');
+    // 各キャンバス要素と合計表示要素を取得。
 
     if (!weeklyCanvas || !ratioCanvas || !typeCanvas) {
         return;
     }
 
     const colorPalette = ['#0f62fe', '#198038', '#da1e28', '#ffc107', '#9c27b0', '#006d75', '#f78da7'];
+    // 可視化に使うカラーパレット。
 
     const createPalette = (count) => (
         Array.from({ length: count }, (_, index) => colorPalette[index % colorPalette.length])
@@ -33,10 +36,12 @@
             chart.update();
             return chart;
         }
+        // 新しい描画インスタンスを作成。
         return new Chart(canvas.getContext('2d'), config);
     };
 
     const parseNumber = (value) => (typeof value === 'number' ? value : 0);
+    // APIから受け取った値が数値でない場合は 0 を返す。
 
     const describeTopApp = (topApp) => {
         if (!topApp) {
@@ -45,6 +50,7 @@
         const minutes = parseNumber(topApp.app_time);
         return `${topApp.app_name}（${topApp.app_type}）：${minutes.toLocaleString()} 分`;
     };
+    // 最多利用アプリを表示用の文字列に整形。
 
     const normalizeBuckets = (items) => {
         if (!items || !items.length) {
@@ -53,6 +59,7 @@
         return items;
     };
 
+    // 1週間分のラベルと値から棒グラフ用のChart.js設定を組み立てる。
     const buildWeeklyConfig = (dataPoints) => {
         const labels = dataPoints.map((item) => item.label);
         const values = dataPoints.map((item) => parseNumber(item.total));
@@ -90,6 +97,7 @@
         };
     };
 
+    // アプリ別／カテゴリ別の比率をドーナツチャート設定に加工。
     const buildDonutConfig = (items) => {
         const normalized = normalizeBuckets(items);
         const labels = normalized.map((item) => item.label);
@@ -130,7 +138,9 @@
         const minutes = parseNumber(value);
         element.textContent = `合計 ${minutes.toLocaleString()} 分`;
     };
+    // 合計表示ラベルに値を吹き出し。
 
+    // APIレスポンスを受け取り、トップApp表示と各チャートを更新。
     const renderPayload = (payload) => {
         if (topAppEl) {
             topAppEl.textContent = describeTopApp(payload.top_app);
@@ -147,6 +157,7 @@
     };
 
     const fetchAndRender = async () => {
+        // APIから集計データを取得し、チャートに反映。
         try {
             const response = await fetch(endpoint, { credentials: 'same-origin' });
             if (!response.ok) {
@@ -159,7 +170,7 @@
                 topAppEl.textContent = '集計データを取得できませんでした。';
             }
             console.error(err);
-            // If charts exist, clear them to avoid stale data
+            // 取得に失敗したら以前の描画結果を破棄して空状態に戻す。
             [weeklyChart, ratioChart, typeChart].forEach((chart) => chart?.destroy());
             weeklyChart = null;
             ratioChart = null;
@@ -168,5 +179,6 @@
     };
 
     fetchAndRender();
+    // 個人統計側から通知が来たら再フェッチして再描画。
     window.addEventListener('personal-stats-refresh', fetchAndRender);
 })();
