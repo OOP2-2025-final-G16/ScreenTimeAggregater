@@ -25,5 +25,13 @@
             {% endfor %}
         </tbody>
     </table>
+        <script
+            data-timeout="0"
+            data-heartbeat-url="{{ url_for('heartbeat') }}"
+            data-heartbeat-interval="120000"
+            data-logout-url="{{ url_for('logout') }}"
+            data-redirect-url="{{ url_for('login') }}"
+            src="{{ url_for('static', filename='auto-logout.js') }}"
+        ></script>
 </body>
 </html>
